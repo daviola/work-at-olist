@@ -129,4 +129,52 @@ def book_id(request, id):
                             "authors": list(book_got.authors.values())}
         return HttpResponse(json.dumps(response), content_type="text/json")
     
+    # update book by id
+    if request.method == "PUT":
+        name = None
+        edition = None
+        publication_year = None
+        authors = None
+        try:
+            if 'name' in request.GET:
+                name = request.GET['name']
+            if 'publication_year' in request.GET:
+                publication_year = int(request.GET['publication_year'])
+            if 'edition' in request.GET:
+                edition = int(request.GET['edition'])
+            if 'authors' in request.GET:
+                authors = list(json.loads(request.GET['authors']))
+        except:
+            response ={"Cause":"Check your parameters", 'parameters':request.GET}
+            return HttpResponse(json.dumps(response),status=400)
+        try:
+            book_got = Book.objects.get(pk=int(id))
+        except:
+            return HttpResponse(json.dumps({'cause': 'not found'}), content_type="text/json", status=204)
+        if name:
+            book_got.name = name
+        if publication_year:
+            book_got.publication_year = publication_year
+        if edition:
+            book_got.edition = edition
+        if authors:
+            cont = 0
+            # clear authors            
+            book_got.authors.clear()
+            for author in authors:
+                if cont> MAX_AUTHORS:
+                    break                
+                author_to_add = Author.objects.get(pk=int(author))                
+
+                book_got.authors.add(author_to_add)
+                cont +=1
+        book_got.save()            
+
+        response = {"id": book_got.id,
+                            "name": book_got.name,
+                            "publication_year": book_got.publication_year,
+                            "edition": book_got.edition,
+                            "authors": list(book_got.authors.values())}
+        return HttpResponse(json.dumps(response), content_type="text/json")
+
     return HttpResponse(json.dumps({'cause':'forbidden method: '+str(request.method)}), content_type="text/json", status=403)

@@ -135,3 +135,39 @@ class BooksTestCase(TestCase):
         content = json.loads(book_got.content.decode())
         self.assertEqual(content, {'cause': 'forbidden method: COPY'})
         self.assertEqual(book_got.status_code, 403)
+    
+    # /book/<id> PUT
+    def test_put_book(self):
+        request = HttpRequest()
+        request.method = "PUT"
+        request.GET["name"] = 'book_test_2_edited'
+        request.GET["publication_year"] = 2000
+        request.GET["edition"] = 4
+        request.GET["authors"] = json.dumps([self.author1.id])
+        book_got = book_id(request, self.book.id)
+        self.assertEqual(book_got.status_code, 200)
+        content = json.loads(book_got.content.decode())
+  
+        self.assertEqual(request.GET["name"], content["name"])
+        self.assertEqual(request.GET["edition"], content["edition"])
+        self.assertEqual(request.GET["publication_year"], content["publication_year"])
+        self.assertEqual(len(content["authors"]), 1)
+        # verify is edited
+        book_got = Book.objects.get(pk=self.book.id)
+        self.assertEqual(book_got.name, request.GET["name"])
+        self.assertEqual(book_got.publication_year, request.GET["publication_year"])
+        self.assertEqual(book_got.edition, request.GET["edition"])
+        self.assertEqual(list(book_got.authors.values()), [{"id":self.author1.id, "name":self.author1.name}])
+    
+    # /book/<id> PUT
+    def test_put_wrong_book(self):
+        request = HttpRequest()
+        request.method = "PUT"
+        request.GET["name"] = 'book_test_2_edited'
+        request.GET["publication_year"] = 2000
+        request.GET["edition"] = 4
+        request.GET["authors"] = json.dumps([self.author1.id])
+        book_got = book_id(request, 3)
+        self.assertEqual(book_got.status_code, 204)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(content, {'cause': 'not found'})
