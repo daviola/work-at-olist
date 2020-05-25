@@ -113,3 +113,20 @@ def book(request):
     else:
         return HttpResponse(status=400)
 
+@csrf_exempt
+def book_id(request, id):
+    # PUT GET DELETE
+    # Get book by id
+    if request.method == "GET":
+        try:
+            book_got = Book.objects.get(pk=int(id))
+        except:
+            return HttpResponse(json.dumps({"cause":"invalid id"}),status=400)
+        response = {"id": book_got.id,
+                            "name": book_got.name,
+                            "publication_year": book_got.publication_year,
+                            "edition": book_got.edition,
+                            "authors": list(book_got.authors.values())}
+        return HttpResponse(json.dumps(response), content_type="text/json")
+    
+    return HttpResponse(json.dumps({'cause':'forbidden method: '+str(request.method)}), content_type="text/json", status=403)

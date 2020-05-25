@@ -1,7 +1,7 @@
 from django.test import TestCase
 from .models import Book
 from authors.models import Author
-from .views import books, book
+from .views import books, book, book_id
 from django.http import HttpRequest
 import json
 
@@ -90,3 +90,48 @@ class BooksTestCase(TestCase):
         content = json.loads(book_posted.content.decode())
         self.assertEqual(content,{"cause":"Missing parameters"})
         self.assertEqual(book_posted.status_code, 400)
+    
+    # /book/<id> GET
+    def test_get_book_fields(self):
+        request = HttpRequest()
+        request.method = "GET"                
+        book_got = book_id(request, self.book.id)
+        content = json.loads(book_got.content.decode())        
+        self.assertIn("id", content)
+        self.assertIn("name", content)
+        self.assertIn("publication_year", content)
+        self.assertIn("edition", content)
+        self.assertIn("authors", content)
+        self.assertEqual(list, type(content["authors"]))
+        self.assertEqual(book_got.status_code, 200)
+
+    # /book/<id> GET
+    def test_get_book_values(self):
+        request = HttpRequest()
+        request.method = "GET"                
+        book_got = book_id(request, self.book.id)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(content['id'], self.book.id)
+        self.assertEqual(content['name'], "book_test1")
+        self.assertEqual(content['publication_year'], 2020)
+        self.assertEqual(content['edition'], 20)
+        self.assertIn({'id': self.author1.id, "name": self.author1.name}, content['authors'])
+        self.assertEqual(book_got.status_code, 200)
+
+    # /book/<id> GET
+    def test_get_wrong_id(self):
+        request = HttpRequest()
+        request.method = "GET"                
+        book_got = book_id(request,3)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(content, {'cause': 'invalid id'})
+        self.assertEqual(book_got.status_code, 400)
+    
+    # /book/<id> forbidden method
+    def test_forbidden_method(self):
+        request = HttpRequest()
+        request.method = "COPY"                
+        book_got = book_id(request,3)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(content, {'cause': 'forbidden method: COPY'})
+        self.assertEqual(book_got.status_code, 403)
