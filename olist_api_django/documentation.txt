@@ -23,7 +23,7 @@ set DJANGO_DATABASE_NAME=.\olist_api_django\db.sqlite3
 run python manage.py migrate
 import 1.005.000 authors with: python manage.py import_authors authors.csv
 
-Check the documentation to use the API on: URL
+Check the documentation to use the API on: https://documenter.getpostman.com/view/11473189/SztA7UZD?version=latest
 
 ========== Testing ==========
 run: python manage.py test

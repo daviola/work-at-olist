@@ -7,6 +7,10 @@ from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 MAX_AUTHORS = 10
 
+def root_api(request):
+    response = {'api_doc':'https://documenter.getpostman.com/view/11473189/SztA7UZD?version=latest'}
+    return HttpResponse(json.dumps(response), content_type="text/json", status=200)    
+
 def books(request):
     # return a list of books based on some paremeters
     # GET

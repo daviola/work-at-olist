@@ -27,4 +27,5 @@ urlpatterns = [
     path('book', viewsBooks.book),
     path('book/', viewsBooks.book),
     path('book/<id>', viewsBooks.book_id),
+    path('', viewsBooks.root_api),
 ]
