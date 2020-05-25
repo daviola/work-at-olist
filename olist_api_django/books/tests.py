@@ -1,7 +1,7 @@
 from django.test import TestCase
 from .models import Book
 from authors.models import Author
-from .views import books
+from .views import books, book
 from django.http import HttpRequest
 import json
 
@@ -54,3 +54,39 @@ class BooksTestCase(TestCase):
         self.assertEqual(content['books'][0]['publication_year'],2010)
         self.assertEqual(content['books'][0]['edition'],10)
         self.assertEqual(content['books'][0]['authors'][0],{'name':self.author1.name, "id":self.author1.id})
+    
+     # /book POST
+    def test_post_book(self):
+        request = HttpRequest()
+        request.method = "POST"
+        request.POST["name"] = 'book_test_2'
+        request.POST["publication_year"] = 1998
+        request.POST["edition"] = 3        
+        request.POST["authors"] = json.dumps([self.author1.id])
+        book_posted = book(request)
+        content = json.loads(book_posted.content.decode())
+        self.assertIn("id", content)
+        self.assertIn("name", content)
+        self.assertIn("publication_year", content)
+        self.assertIn("authors", content)
+        self.assertIn("edition", content)
+        self.assertEqual(request.POST["name"], content["name"])
+        self.assertEqual(request.POST["publication_year"], content["publication_year"])
+        self.assertEqual(request.POST["edition"], content["edition"])
+        self.assertEqual(book_posted.status_code, 201)
+        # verify is posted        
+        book_got = Book.objects.get(pk=3)
+        self.assertEqual(book_got.name, request.POST["name"])
+
+    # /book POST
+    def test_post_book_wrong_values(self):
+        request = HttpRequest()
+        request.method = "POST"
+        request.POST["name"] = ''
+        request.POST["publication_year"] = 1998
+        request.POST["edition"] = 3        
+        request.POST["authors"] = json.dumps([self.author1.id])
+        book_posted = book(request)
+        content = json.loads(book_posted.content.decode())
+        self.assertEqual(content,{"cause":"Missing parameters"})
+        self.assertEqual(book_posted.status_code, 400)

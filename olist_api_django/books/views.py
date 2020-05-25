@@ -4,6 +4,8 @@ import json
 from .models import Book
 from authors.models import Author
 from django.core.paginator import Paginator
+from django.views.decorators.csrf import csrf_exempt
+MAX_AUTHORS = 10
 
 def books(request):
     # return a list of books based on some paremeters
@@ -49,12 +51,12 @@ def books(request):
         books_got = paginator.get_page(page)
         response_books = []
         for book_got in books_got:
-            j= {"id": book_got.id,
+            book_to_insert= {"id": book_got.id,
                             "name": book_got.name,
                             "publication_year": book_got.publication_year,
                             "edition": book_got.edition,
                             "authors": list(book_got.authors.values())}
-            response_books.append(j)        
+            response_books.append(book_to_insert)        
         response = {"books": response_books, 
                     "page":page,
                     "count":paginator.count,
@@ -64,4 +66,50 @@ def books(request):
         return HttpResponse(status=400)
     response = json.dumps({})
     return HttpResponse(response, content_type="text/json", status=200)
+
+@csrf_exempt
+def book(request):    
+    # POST 
+    # create a book
+    if request.method == 'POST':
+        name = None
+        edition = None
+        publication_year = None
+        authors = None
+        try:    
+            name = request.POST.get('name', "")            
+            publication_year = int(request.POST.get('publication_year', ""))
+            edition = int(request.POST.get('edition', ""))
+            authors = list(json.loads(request.POST.get('authors', "")))
+        except:            
+            response ={"Cause":"Check your parameters"}
+            return HttpResponse(json.dumps(response),status=400)        
+        # We must receive all parameters
+        if not(name and edition and publication_year and authors):
+            response ={"cause":"Missing parameters"}
+            return HttpResponse(json.dumps(response), content_type="text/json", status=400)      
+
+        new_book = Book(
+            name=name,
+            edition=edition,
+            publication_year=publication_year,            
+        )
+        new_book.save()
+        cont = 0
+        for author in authors:
+            if cont> MAX_AUTHORS:
+                break
+            author_to_add = Author.objects.get(pk=int(author))
+
+            new_book.authors.add(author_to_add)
+            cont +=1
+        new_book.save()
+        response = json.dumps({"id": new_book.id,
+                            "name": new_book.name,
+                            "publication_year": new_book.publication_year,
+                            "edition": new_book.edition,
+                            "authors": list(new_book.authors.values())})
+        return HttpResponse(response, content_type="text/json", status=201)
+    else:
+        return HttpResponse(status=400)
 
