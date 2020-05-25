@@ -1,0 +1,35 @@
+========== Description ==========
+This project has been made as a part of the selective proceccess for a position at Olist.
+
+The system must read a csv file with more than a milion authors and save into database
+The system must expose authors at an endpoint of the API
+The API must provide a CRUD for books and each book can have one or more authors
+
+For this project i'm using python, Django Framework and sqlite
+
+========== Setup ==========
+if you dont have it, install python =>3.8
+create an env with: python -m venv .\venv
+run pip install -r requirements.txt
+Configure your database at settings.py (DATABASES field)
+    - if you're gonna deploy in heroku, you have to set up database to use some other database like postgres
+    - you can set the values at settings or in the enviroment using the keys that settings are calling with os.environ()
+Default Values for env:
+set DJANGO_SECRET_KEY="s-7)fn9nmdfza(1$m^5)(hsor6t&b!fqqxz&%(ibghc-umm9t)"
+set DJANGO_DATABASE_ENGINE=django.db.backends.sqlite3
+set DJANGO_DATABASE_NAME=.\olist_api_django\db.sqlite3
+
+run python manage.py makemigrations
+run python manage.py migrate
+import 1.005.000 authors with: python manage.py import_authors authors.csv
+
+Check the documentation to use the API on: URL
+
+========== Testing ==========
+run: python manage.py test
+
+========== Work Enviroment ==========
+This project was developed using Windows 10 and vscode as the IDE.
+Language used: Python 3.8
+Framework: Django
+Database: sqlite

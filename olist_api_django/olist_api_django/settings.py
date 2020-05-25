@@ -20,7 +20,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 's-7)fn9nmdfza(1$m^5)(hsor6t&b!fqqxz&%(ibghc-umm9t)'
+if 'DJANGO_SECRET_KEY' in os.environ:
+    SECRET_KEY = os.environ['DJANGO_SECRET_KEY']
+else:
+    SECRET_KEY = "s-7)fn9nmdfza(1$m^5)(hsor6t&b!fqqxz&%(ibghc-umm9t)"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -74,14 +77,28 @@ WSGI_APPLICATION = 'olist_api_django.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+DATABASES = {'default':{}}
+if 'DJANGO_DATABASE_ENGINE' in os.environ:
+    DATABASES['default']['ENGINE']=os.environ['DJANGO_DATABASE_ENGINE']
+else:
+    DATABASES['default']['ENGINE']='django.db.backends.sqlite3'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+if 'DJANGO_DATABASE_NAME' in os.environ:
+    DATABASES['default']['NAME']=os.environ['DJANGO_DATABASE_NAME']
+else:
+    DATABASES['default']['NAME']='db.sqlite3'
 
+if 'DJANGO_DATABASE_USER' in os.environ:
+    DATABASES['default']['USER']=os.environ['DJANGO_DATABASE_USER']
+
+if 'DJANGO_DATABASE_PORT' in os.environ:
+    DATABASES['default']['PORT']=os.environ['DJANGO_DATABASE_PORT']
+
+if 'DJANGO_DATABASE_PWD' in os.environ:
+    DATABASES['default']['PASSWORD']=os.environ['DJANGO_DATABASE_PWD']
+
+if 'DJANGO_DATABASE_HOST' in os.environ:
+    DATABASES['default']['HOST']=os.environ['DJANGO_DATABASE_HOST']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
