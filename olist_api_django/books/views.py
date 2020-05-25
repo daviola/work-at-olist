@@ -22,10 +22,9 @@ def books(request):
             if 'publication_year' in request.GET:
                 publication_year = request.GET['publication_year']
             if 'edition' in request.GET:
-                edition = int(request.GET['edition'])
+                edition = request.GET['edition']
             if 'authors' in request.GET:
-                authors = list(json.loads(request.GET['authors']))
-                print(authors)
+                authors = list(json.loads(request.GET['authors']))                
             if 'page' in request.GET:
                 page = request.GET['page']
         except:

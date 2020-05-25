@@ -20,7 +20,6 @@ set DJANGO_SECRET_KEY="s-7)fn9nmdfza(1$m^5)(hsor6t&b!fqqxz&%(ibghc-umm9t)"
 set DJANGO_DATABASE_ENGINE=django.db.backends.sqlite3
 set DJANGO_DATABASE_NAME=.\olist_api_django\db.sqlite3
 
-run python manage.py makemigrations
 run python manage.py migrate
 import 1.005.000 authors with: python manage.py import_authors authors.csv
 
