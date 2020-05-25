@@ -177,4 +177,15 @@ def book_id(request, id):
                             "authors": list(book_got.authors.values())}
         return HttpResponse(json.dumps(response), content_type="text/json")
 
+    # Delete book from id
+    if request.method == "DELETE":
+        try:
+            book_got = Book.objects.get(pk=int(id))
+        except:
+            return HttpResponse(json.dumps({'cause': 'not found'}), content_type="text/json", status=204)
+        
+        book_got.delete()
+               
+        return HttpResponse(json.dumps({}), content_type="text/json")
+
     return HttpResponse(json.dumps({'cause':'forbidden method: '+str(request.method)}), content_type="text/json", status=403)

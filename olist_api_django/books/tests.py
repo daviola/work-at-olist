@@ -171,3 +171,17 @@ class BooksTestCase(TestCase):
         self.assertEqual(book_got.status_code, 204)
         content = json.loads(book_got.content.decode())
         self.assertEqual(content, {'cause': 'not found'})
+    
+    # /book/<id> DELETE
+    def test_delete_book(self):
+        request = HttpRequest()
+        request.method = "DELETE"        
+        book_got = book_id(request, self.book.id)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(book_got.status_code, 200)
+        # delete success
+        self.assertEqual(content, {})
+        # delete error
+        book_got = book_id(request, self.book.id)
+        content = json.loads(book_got.content.decode())
+        self.assertEqual(content, {"cause":"not found"})
