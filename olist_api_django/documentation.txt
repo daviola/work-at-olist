@@ -13,6 +13,7 @@ create an env with: python -m venv .\venv
 run pip install -r requirements.txt
 Configure your database at settings.py (DATABASES field)
     - if you're gonna deploy in heroku, you have to set up database to use some other database like postgres
+    - in Heroko you will have to set DISABLE_COLLECTSTATIC=1
     - you can set the values at settings or in the enviroment using the keys that settings are calling with os.environ()
 Default Values for env:
 set DJANGO_SECRET_KEY="s-7)fn9nmdfza(1$m^5)(hsor6t&b!fqqxz&%(ibghc-umm9t)"
