@@ -24,7 +24,7 @@ def authors(request):
         authors = paginator.get_page(page)
 
         response = {"Authors": list(authors.object_list.values()), 
-                    "page":page,
+                    "page":authors.number,
                     "count":paginator.count,
                     "num_pages":paginator.num_pages}
         return HttpResponse(json.dumps(response), status=200)                       
